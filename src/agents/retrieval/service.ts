@@ -36,7 +36,7 @@ export class RetrievalService {
     // Convert to ProductSuggestion[]
     return products.map(product => ({
       ...product,
-      confidence: 0.8, // TODO: Implement proper confidence scoring
+      confidence: 0.9, // TODO: Implement proper confidence scoring
       reasoning: `Found product matching your search: ${query.text}` // TODO: Implement proper reasoning
     }));
   }
