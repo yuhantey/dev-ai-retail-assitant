@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from "./components/ui/button"
 import { VoiceService } from './services/voice'
+import { RetrievalService } from './services/retrieval'
 
 const voiceService = new VoiceService()
+const retrievalService = new RetrievalService()
 
 function App() {
   const [isListening, setIsListening] = useState(false)
   const [transcript, setTranscript] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSupported, setIsSupported] = useState(false)
+  const [products, setProducts] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const supported = voiceService.isBrowserSupported()
@@ -26,11 +30,24 @@ function App() {
     console.log('Starting voice recognition...')
     setError(null)
     setTranscript('') // Clear previous transcript
+    setProducts([]) // Clear previous products
     try {
       voiceService.startListening(
-        (text) => {
+        async (text) => {
           console.log('Received transcript:', text)
           setTranscript(text)
+          setIsLoading(true)
+          
+          try {
+            // Search with RAG
+            const { products: foundProducts } = await retrievalService.getSuggestions(text)
+            setProducts(foundProducts)
+          } catch (error) {
+            console.error('RAG search error:', error)
+            setError('Failed to search products')
+          } finally {
+            setIsLoading(false)
+          }
         },
         (error) => {
           console.error('Voice recognition error:', error)
@@ -97,6 +114,23 @@ function App() {
               <div className="p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">You said:</p>
                 <p>{transcript}</p>
+              </div>
+            )}
+            {isLoading && (
+              <div className="p-4 bg-muted rounded-lg">
+                <p>Searching for products...</p>
+              </div>
+            )}
+            {products.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold">Found Products:</h2>
+                {products.map((product) => (
+                  <div key={product.id} className="p-4 bg-muted rounded-lg">
+                    <h3 className="font-semibold">{product.name}</h3>
+                    <p className="text-sm text-muted-foreground">${product.price}</p>
+                    <p className="mt-2">{product.description}</p>
+                  </div>
+                ))}
               </div>
             )}
           </div>

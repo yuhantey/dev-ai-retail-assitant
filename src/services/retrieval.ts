@@ -5,8 +5,8 @@ export class RetrievalService {
   private supabase
 
   constructor() {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')
+    const supabaseUrl = 'https://qnxkxumfcocyiiwswosi.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFueGt4dW1mY29jeWlpd3N3b3NpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDM5MTE2MjYsImV4cCI6MjA1OTQ4NzYyNn0.nxHlKrx4IbQGKTvddmMQVBDHsgLkHM5cPl57RdNW9BM'
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase credentials are required')
